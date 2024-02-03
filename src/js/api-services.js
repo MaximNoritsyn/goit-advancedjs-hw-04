@@ -6,16 +6,17 @@ axios.defaults.params = {
     key: API_KEY,
     image_type: "photo",
     orientation: "horizontal",
-    safesearch: true
+    safesearch: true,
+    per_page: 40,
 };
 
-export const fetchImages = async (query, page) => {
-    try {
-        const { data } = await axios.get("api", {
-            params: { q: query, page: page },
-        });
-        return data.hits;
-    } catch (error) {
-        throw error;
-    }
+export async function fetchImages(query, page) {
+    const { data } = await axios.get("api", {
+        params: { q: query, page: page },
+    });
+    console.log(data);
+    return {
+        images: data.hits,
+        totalPages: data.totalhits,
+    };
 }
