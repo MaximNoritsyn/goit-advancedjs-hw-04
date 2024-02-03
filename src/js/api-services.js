@@ -14,9 +14,8 @@ export async function fetchImages(query, page) {
     const { data } = await axios.get("api", {
         params: { q: query, page: page },
     });
-    console.log(data);
     return {
         images: data.hits,
-        totalPages: data.totalhits,
+        totalImages: data.totalHits,
     };
 }

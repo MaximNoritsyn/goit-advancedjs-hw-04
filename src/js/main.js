@@ -56,13 +56,13 @@ function loadMoreSettings(hidden = true) {
 
 async function fetchMoreImages() {
     try {
-        const { images, totalPages } = await fetchImages(vars.query, vars.page);
+        const { images, totalImages } = await fetchImages(vars.query, vars.page);
         if (images.length === 0) {
             sendError("Sorry, there are no images matching your search query. Please try again.")
             loadMoreSettings(true)
             return;
         }
-        if (vars.page >= totalPages) {
+        if (vars.page >= (totalImages / 40)) {
             sendSuccess("Hooray! We found totalHits images.")
             loadMoreSettings(true);
         }
@@ -75,12 +75,13 @@ async function fetchMoreImages() {
 
         vars.cardHeight = selectors.gallery.firstElementChild.clientHeight;
         window.scrollBy({
-            top: vars.cardHeight * 2,
+            top: vars.cardHeight - 200,
             behavior: "smooth",
         });
 
     } catch (error) {
-        console.log(error.message, "Fetch error");
+        sendError("Sorry, something went wrong. Please try again.")
+        loadMoreSettings(true);
     }
 }
 
