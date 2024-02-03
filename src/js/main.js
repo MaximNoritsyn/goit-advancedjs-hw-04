@@ -38,6 +38,14 @@ function sendError(message, title = "") {
     iziToast.error(options);
 }
 
+function sendSuccess(message) {
+    const options = {
+        message,
+        position: "topRight",
+    };
+    iziToast.success(options);
+}
+
 function loadMoreSettings(hidden = true) {
     if (hidden) {
         selectors.loadMore.classList.add("is-hidden");
@@ -55,7 +63,7 @@ async function fetchMoreImages() {
             return;
         }
         if (vars.page >= totalPages) {
-            sendError("Hooray! We found totalHits images.")
+            sendSuccess("Hooray! We found totalHits images.")
             loadMoreSettings(true);
         }
         else {
@@ -106,27 +114,28 @@ function murkupImages(images) {
         likes,
         views,
         comments,
-        downloads
+        downloads,
+        tags
     }) => {
         return `
         <a class="photo-card" href="${largeImageURL}">
-            <img src="${webformatURL}" alt="" loading="lazy" />
+            <img src="${webformatURL}" alt="${tags}" loading="lazy" />
             <div class="info">
                 <p class="info-item">
                     <b>Likes</b>
-                    <div>${likes}</div>
+                    ${likes}
                 </p>
                 <p class="info-item">
                     <b>Views</b>
-                    <div>${views}</div>
+                    ${views}
                 </p>
                 <p class="info-item">
                     <b>Comments</b>
-                    <div>${comments}</div>
+                    ${comments}
                 </p>
                 <p class="info-item">
                     <b>Downloads</b>
-                    <div>${downloads}</div>
+                    ${downloads}
                 </p>
             </div>
         </a>`;
