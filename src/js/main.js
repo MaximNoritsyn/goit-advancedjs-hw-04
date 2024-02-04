@@ -27,14 +27,11 @@ const selectors = {
 selectors.form.addEventListener("submit", handlerSubmit);
 selectors.loadMore.addEventListener("click", loadMoreHandler);
 
-function sendError(message, title = "") {
+function sendError(message) {
     const options = {
         message,
         position: "topRight",
     };
-    if (title) {
-        options.title = title;
-    }
     iziToast.error(options);
 }
 
@@ -59,19 +56,21 @@ async function fetchMoreImages() {
         const { images, totalImages } = await fetchImages(vars.query, vars.page);
         if (images.length === 0) {
             sendError("Sorry, there are no images matching your search query. Please try again.")
-            loadMoreSettings(true)
             return;
         }
-        if (vars.page >= (totalImages / 40)) {
-            sendSuccess("Hooray! We found totalHits images.")
-            loadMoreSettings(true);
-        }
-        else {
-            loadMoreSettings(false);
+        if (vars.page === 1) {
+            sendSuccess(`Hooray! We found ${totalImages} images.`)
         }
 
         selectors.gallery.insertAdjacentHTML("beforeend", murkupImages(images));
         lightbox.refresh();
+
+        if (vars.page >= (totalImages / 40)) {
+            sendError("We're sorry, but you've reached the end of search results.")
+        }
+        else {
+            loadMoreSettings(false);
+        }
 
         vars.cardHeight = selectors.gallery.firstElementChild.clientHeight;
         window.scrollBy({
@@ -87,16 +86,18 @@ async function fetchMoreImages() {
 
 function handlerSubmit(event) {
     event.preventDefault();
+    loadMoreSettings(true);
     selectors.gallery.innerHTML = "";
-    if (selectors.input.value === "") { 
+    const search_value = selectors.input.value.trim();
+    if (search_value === "") { 
         sendError("Please enter a search query.");
         return;
     }
-    if (selectors.input.value === vars.query) {
+    if (search_value === vars.query) {
         vars.page += 1;
     }
     else {
-        vars.query = selectors.input.value;
+        vars.query = search_value;
         vars.page = 1;
     }
     
